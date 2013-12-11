@@ -1,0 +1,24 @@
+---
+- name: revert
+  hosts: all
+  vars: 
+    project_dir: /tmp/test2
+    versions_dir: /tmp/test2/versions
+    cache_dir: /tmp/test2/cache
+  tasks:
+    - file: state=directory  dest={{ project_dir }}
+    - shell: ls -1 {{ versions_dir }} |  sort -n | tac | head -n 2
+      register: last_deploy
+    - shell: ls -1 {{ versions_dir }} |  sort -n | tac | head -n 2 | wc -l
+      register: last_deploy_num
+
+    - debug: msg="{{ last_deploy_num.stdout }}"
+    - debug: msg="{{last_deploy.stdout_lines}}"
+
+    - fail: msg="Less than 2 deploys on server left, cannot rollback!."
+      when: " last_deploy_num.stdout != '2' "
+
+    - file: state=link src={{ versions_dir }}/{{ last_deploy.stdout_lines[1] }} dest={{ project_dir }}/current
+    - file: state=absent recurse=yes path={{ versions_dir }}/{{ last_deploy.stdout_lines[0]}}
+
+
