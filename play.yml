@@ -1,24 +1,37 @@
 ---
 - name: deploy
   hosts: all
-  vars: 
-    project_dir: /tmp/test2
-    versions_dir: /tmp/test2/versions
-    cache_dir: /tmp/test2/cache
+  vars_files:
+    - include: vars/vars.yml 
   tasks:
+    # First, let's create directory structure
     - file: state=directory  dest={{ project_dir }}
     - file: state=directory  dest={{ versions_dir }}
-    - file: state=directory  dest={{cache_dir}}
+    - file: state=directory  dest={{ cache_dir }}
+    - file: state=directory  dest={{ virtualenv }}
+    - file: state=directory  dest={{ shared_dir }}
+
+    # Create any additional directories needed
+    - file: state=directory  dest={{ shared_dir }}/media
+    
+    # Register unix timestamp for current deploy version
     - command: date +%s
       register: current_dir
-    - file: name=previous state=absent
-    - git: repo=https://github.com/brodul/yodl.git dest={{ cache_dir }}
+
+    # Clone git repo into cache dir, they rsync to current_dir deploy version
+    - git: repo={{ gitrepo }} version={{ gitbranch }} dest={{ cache_dir }} update=yes
     - synchronize: src={{ cache_dir }} dest={{ versions_dir }}/{{ current_dir.stdout }}
+
+    # Re-symlink current to current_dir deploy version
     - file: state=link src={{ versions_dir }}/{{ current_dir.stdout }} dest={{ project_dir }}/current
-    - file: path={{ project_dir }}/current/yodl/media state=directory
+
+    # Symlink upload media to shared/media
+    - file: state=link src={{ versions_dir }}/{{ current_dir.stdout }} dest={{ shared_dir }}/media
+
+    # Check and remove > num_deploys in the versions_dir
     
     - shell: ls -1 {{ versions_dir }} |  sort -n | tac
       register: last_deploy
 
     - file: state=absent recurse=yes path={{ versions_dir }}/{{ item }}
-      with_items: last_deploy.stdout_lines[5:]
+      with_items: last_deploy.stdout_lines[{{ num_deploys }}:]

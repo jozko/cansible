@@ -1,0 +1,41 @@
+---
+- name: deploy_setup 
+  hosts: all
+  user: deploy
+  sudo: False
+  vars_files:
+    - vars/vars.yml 
+  tasks:
+    - include: common/packages.yml
+    - include: common/python.yml
+    # First, let's create directory structure
+    - file: state=directory  dest={{ projects_root }} owner={{ ansible_env.USER }}
+      sudo: True
+    - file: state=directory  dest={{ project_dir }}
+    - file: state=directory  dest={{ versions_dir }}
+    - file: state=directory  dest={{ shared_dir }}
+    - file: state=directory  dest={{ repo_cache }}
+    - file: state=directory  dest={{ venv_dir }}
+    - file: state=directory  dest={{ shared_var }}
+    - file: state=directory  dest={{ shared_sbin }}
+
+    # Create any additional directories needed
+    - file: state=directory  dest="{{ shared_dir }}/media"
+   
+    # Setup known_host file, so git clone over ssh doesn't fails
+    - template: src=templates/ssh/known_hosts dest="/home/{{ ansible_env.USER }}/.ssh/known_hosts"
+
+    # Upload requirements.txt file to shared directory
+    - template: src=templates/var/requirements.txt dest="{{ shared_var }}/requirements.txt"
+
+    # Upload virtual env wrapper script
+    - template: src=templates/sbin/vexec.sh dest="{{ shared_sbin }}/vexec.sh" mode=0750
+    - template: src=templates/sbin/setup.sh dest="{{ shared_sbin }}/setup.sh" mode=0750
+
+    # Clone git repo into cache dir, then setup virtualnv based 
+    # on information in the projects requirements.txt file 
+    - git: repo={{ gitrepo }} version={{ gitbranch }} dest={{ repo_cache }}
+    - pip: requirements={{ shared_var }}/requirements.txt virtualenv={{ venv_dir }}
+
+    # Setup the application - this belongs to deploy.yml
+    # - command: "{{ shared_sbin }}/setup.sh develop"

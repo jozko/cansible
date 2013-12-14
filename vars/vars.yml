@@ -1,0 +1,18 @@
+# Sample vars file, copy to vars_prod.yml and use that
+# so you don't push any sensitive info to repo. 
+# App name
+app_name: AppName 
+# Directory structure for project
+projects_root: "/var/projects"
+project_dir: "{{ projects_root }}/{{ app_name }}"
+versions_dir: "{{ project_dir}}/versions"
+shared_dir: "{{ project_dir}}/shared"
+shared_var: "{{ project_dir}}/shared/var"
+shared_sbin: "{{ project_dir}}/shared/sbin"
+repo_cache: "{{ project_dir}}/shared/repocache"
+venv_dir: "{{ project_dir}}/shared/venv"
+# Number of deployments to keep on the server(s)
+num_deploys: 5
+# Git repository vars
+gitrepo: "ssh://user@github.com/user/repo.git"
+gitbranch: develop 
