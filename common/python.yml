@@ -1,1 +1,8 @@
 # Tasks that installs python packages needed for Ansible
+- name: install set of essential python modules, needed for ansible, ppa mgmt... 
+  apt: name={{ item }} state=present
+  sudo: True
+  with_items:
+   - python-pycurl
+   - python-software-properties
+   - python-dev

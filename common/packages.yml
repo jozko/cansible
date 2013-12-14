@@ -1,1 +1,16 @@
-# Tasks that install useful packages needed on the server
+- name: install set of standard tools - git, text editors, htop... 
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+   - git
+   - git-core
+   - htop
+   - vim-nox
+   - wget
+   - curl
+   - iotop
+   - telnet
+   - build-essential
+   - postgresql-9.1
+   - postgresql-server-dev-9.1
+   - postgresql-contrib-9.1 
+  sudo: True
