@@ -3,4 +3,7 @@
 # Wrapper script used to setup.py commands
 # thru virtualenv python executable
 
-cd {{ shared_dir }} && {{ venv_dir }}/bin/python {{ repo_cache }}/{{ app_name }}/setup.py $1
+VER={{ current_dir.stdout }}
+ENV={{ install_param }}
+
+cd  {{ versions_dir }}/${VER}/{{ app_name }} && {{ venv_dir }}/bin/python {{ versions_dir }}/${VER}/{{ app_name }}/setup.py ${ENV}

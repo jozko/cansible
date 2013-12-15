@@ -4,7 +4,7 @@
   user: deploy
   sudo: False
   vars_files:
-    - vars/vars.yml 
+    - vars/vars_prod.yml 
   tasks:
     - include: common/packages.yml
     - include: common/python.yml
@@ -37,5 +37,8 @@
     - git: repo={{ gitrepo }} version={{ gitbranch }} dest={{ repo_cache }}
     - pip: requirements={{ shared_var }}/requirements.txt virtualenv={{ venv_dir }}
 
+    # Configure supervisord to start serving application on deployment
+    - template: src=templates/supervisor/program.conf dest="/etc/supervisor/conf.d/{{ app_name }}.conf"
+      sudo: True
     # Setup the application - this belongs to deploy.yml
     # - command: "{{ shared_sbin }}/setup.sh develop"

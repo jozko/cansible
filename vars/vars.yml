@@ -13,6 +13,8 @@ repo_cache: "{{ project_dir}}/shared/repocache"
 venv_dir: "{{ project_dir}}/shared/venv"
 # Number of deployments to keep on the server(s)
 num_deploys: 5
+# Symlink as develop or install as in install
+install_param: develop
 # Git repository vars
 gitrepo: "ssh://user@github.com/user/repo.git"
 gitbranch: develop 
