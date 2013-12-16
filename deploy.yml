@@ -35,8 +35,7 @@
     # Symlink upload media to shared/media
     # - file: state=link src={{ versions_dir }}/{{ current_dir.stdout }} dest={{ shared_dir }}/media
 
-    # Check and remove > num_deploys in the versions_dir
-    
+    # Check and remove > num_deploys in the versions_dir 
     - shell: ls -1 {{ versions_dir }} |  sort -n | tac
       register: last_deploy
 
