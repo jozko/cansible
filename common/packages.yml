@@ -13,4 +13,5 @@
    - postgresql-9.1
    - postgresql-server-dev-9.1
    - postgresql-contrib-9.1 
+   - supervisor 
   sudo: True
