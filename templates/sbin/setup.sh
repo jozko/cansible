@@ -3,7 +3,7 @@
 # Wrapper script used to setup.py commands
 # thru virtualenv python executable
 
-VER={{ current_dir.stdout }}
-ENV={{ install_param }}
+PYTHON_EGG_CACHE= "{{ egg_cache }} "
+export $PYTHON_EGG_CACHE
 
-cd  {{ versions_dir }}/${VER}/{{ app_name }} && {{ venv_dir }}/bin/python {{ versions_dir }}/${VER}/{{ app_name }}/setup.py ${ENV}
+cd {{versions_dir}}/{{current_dir.stdout}}/{{app_name}} &&  {{ venv_dir }}/bin/python {{versions_dir}}/{{current_dir.stdout}}/{{app_name}}/setup.py {{ setup_type }} 

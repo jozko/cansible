@@ -6,9 +6,15 @@
   vars_files:
     - vars/vars_prod.yml 
   tasks:
+    #
+    # Include tasks that setups needen program
+    # packages and pyton packages (dev, python-virtualenv, etc...)
+    #
     - include: common/packages.yml
     - include: common/python.yml
-    # First, let's create directory structure
+    #
+    # After that, let's create app directory structure
+    #
     - file: state=directory  dest={{ projects_root }} owner={{ ansible_env.USER }}
       sudo: True
     - file: state=directory  dest={{ project_dir }}
@@ -19,26 +25,23 @@
     - file: state=directory  dest={{ shared_var }}
     - file: state=directory  dest={{ shared_sbin }}
 
+    #
     # Create any additional directories needed
-    - file: state=directory  dest="{{ shared_dir }}/media"
+    #
+    # - file: state=directory  dest="{{ shared_dir }}/media"
    
+    #
     # Setup known_host file, so git clone over ssh doesn't fails
+    #
     - template: src=templates/ssh/known_hosts dest="/home/{{ ansible_env.USER }}/.ssh/known_hosts"
+    
+    #
+    # Prepare shared virtualenv for application
+    #
+    - command: "virtualenv --no-site-packages {{ venv_dir }}"
 
-    # Upload requirements.txt file to shared directory
-    - template: src=templates/var/requirements.txt dest="{{ shared_var }}/requirements.txt"
-
-    # Upload virtual env wrapper script
-    - template: src=templates/sbin/vexec.sh dest="{{ shared_sbin }}/vexec.sh" mode=0750
-    - template: src=templates/sbin/setup.sh dest="{{ shared_sbin }}/setup.sh" mode=0750
-
-    # Clone git repo into cache dir, then setup virtualnv based 
-    # on information in the projects requirements.txt file 
-    - git: repo={{ gitrepo }} version={{ gitbranch }} dest={{ repo_cache }}
-    - pip: requirements={{ shared_var }}/requirements.txt virtualenv={{ venv_dir }}
-
-    # Configure supervisord to start serving application on deployment
+    #
+    # Configure supervisord to start serving application after deployment
+    #
     - template: src=templates/supervisor/program.conf dest="/etc/supervisor/conf.d/{{ app_name }}.conf"
       sudo: True
-    # Setup the application - this belongs to deploy.yml
-    # - command: "{{ shared_sbin }}/setup.sh develop"
