@@ -16,7 +16,7 @@
     # Clone git repo into cache dir, they rsync to current_dir deploy version
     #
     - git: repo={{ gitrepo }} version={{ gitbranch }} dest={{ repo_cache }} update=yes
-    - synchronize: src="{{ repo_cache }}/" dest={{ versions_dir }}/{{ current_dir.stdout }}
+    - command: rsync -a {{ repo_cache }}/ {{ versions_dir }}/{{ current_dir.stdout }}
 
     #
     # Upload setup script into application version
