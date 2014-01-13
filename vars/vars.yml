@@ -1,8 +1,9 @@
 # App name
 app_name: SampleApp
+app_status: beta
 # Directory structure for project
 projects_root: "/var/projects"
-project_dir: "{{ projects_root }}/{{ app_name }}"
+project_dir: "{{ projects_root }}/{{ app_name }}/{{ app_status }}"
 versions_dir: "{{ project_dir}}/versions"
 shared_dir: "{{ project_dir}}/shared"
 shared_var: "{{ project_dir}}/shared/var"
