@@ -7,12 +7,12 @@
     #
     # Get last two deploy versions
     #
-    - shell: ls -1 {{ versions_dir }} |  sort -n | tac | head -n 2
+    - shell: ls -1 {{ versions_dir }} | grep -o '[0-9]\{10\}' |  sort -n | tac | head -n 2
       register: last_deploy
     #
     # Get number of deployments available on servers
     #
-    - shell: ls -1 {{ versions_dir }} |  sort -n | tac | head -n 2 | wc -l
+    - shell: ls -1 {{ versions_dir }} | grep -o '[0-9]\{10\}' |  sort -n | tac | head -n 2 | wc -l
       register: last_deploy_num
 
     #
